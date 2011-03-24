@@ -1,0 +1,36 @@
+local_interfaces = <; [127.0.0.1]:25 ; [::1]:25
+
+acl_not_smtp = acl_ses_users
+acl_smtp_mail = acl_ses_users
+acl_smtp_rcpt = acl_accept_any
+
+ignore_bounce_errors_after = 1d
+timeout_frozen_after = 7d
+
+begin acl
+
+acl_ses_users:
+	accept
+		senders = lsearch;/etc/exim4/ses.senders
+	deny
+
+acl_accept_any:
+	accept
+
+begin routers
+
+ses:
+	driver = accept
+	transport = ses
+
+begin transports
+
+ses:
+	driver = pipe
+	path = /bin:/usr/bin:/usr/local/bin:/opt/local/bin/
+	environment = AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX:AWS_SECRET_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY:DEBUG=True
+	command = exim_ses_transport $sender_address $pipe_addresses
+	batch_max = 25
+
+begin authenticators
+

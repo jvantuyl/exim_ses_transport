@@ -1,0 +1,74 @@
+Amazon Simple-Email-Service (SES) Transport for Exim
+====================================================
+
+What
+----
+
+This transport allows you use Exim to deliver mail through Amazon's SES
+service.
+
+Why SES + Exim?
+---------------
+
+1.  Maintenance
+
+Most legacy systems expect to be able to deliver via SMTP or one of the local
+delivery commands (/usr/bin/mail, /usr/sbin/sendmail, etc.).  Using exim lifts
+the burden of having to maintian your own delivery framework if your
+application doesn't have native support for SES.
+
+2. Flexibility
+
+Exim is capable of doing fairly sophisticated checks and processing messages.
+Should you have reason to not completely trust your messages, this opens up
+good integration with trusted tools like SpamAssassin, ClamAv, etc.
+
+3. Incoming Mail
+
+Some applications need to receive mail, not just send it.  Exim gives you a
+fully implemented receiving implemention if you so desire.  This makes it easy
+to have one mail delivery system without giving up the benefits of SES.
+
+4. Robustness
+
+Sometimes outages happen.  Maybe you accidentally deployed the wrong
+credentials.  Maybe there was a transient network outage.  Maybe your server
+was running out of RAM.  For whatever reason, Exim has facilities to queue
+messages that can't be immediately delivered.  Managing your own mail queue is
+just something you don't need to do.
+
+5. Debugging
+
+Exim provides a powerful way to get at your mail without tearing apart your
+code.  The ability to freeze messages in the queue and then introspect them can
+be handled at a systems level instead of requiring invasive instrumentation of
+mail code.  This is especially useful when you really need to see what your
+mail API is generating.
+
+Why not use ses-send-email.pl?
+------------------------------
+
+Using the Python Boto library provides more precise error handling and avoids
+some of the peculiarities of the Perl script provided by Amazon.  Having this
+packaged as a Python egg also eases deployment onto multiple systems.
+
+How
+---
+
+First, install the transport.  This can be done easily with the pip or easy_install commands.
+
+To configure it, take a look at the example exim4.config.sample.  It shows how
+to configure exim to use this transport program.  This configuration listens
+only on the localhost.  Only SES messages are sent, and only then if the
+username is present in the /etc/exim4/ses.senders file.  Since SES senders have
+to be authorized, you should have this list.  If you have a more complex
+installation, you can still use this router at the top to send only SES senders
+via SES and others via your normal configuration.
+
+Adminstrivia
+------------
+
+This software was written by Jayson Vantuyl <jvantuyl@gmail.com>, with generous
+support from AssetMap (http://www.assetmap.com).  It is licensed under the LGPL
+version 3.0.
+
