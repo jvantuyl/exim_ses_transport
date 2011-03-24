@@ -30,6 +30,10 @@ setup(
 	author_email = "jvantuyl@gmail.com",
 	description = "provides a 'pipe' transport for Exim to deliver mail via Amazon SES",
 	license = "LGPL",
+	classifiers = [
+		'Topic :: Communications :: Email :: Filters',
+		'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)'
+	],
 
 	entry_points = { 'console_scripts': [ 'exim_ses_transport=exim_ses_transport.transport:run' ] }
 )
