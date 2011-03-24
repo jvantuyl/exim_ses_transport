@@ -23,17 +23,24 @@ from setuptools import setup, find_packages
 setup(
 	name = "EximSesTransport",
 	version = "0.1",
-	packages = find_packages(),
-	install_requires = ['boto'],
 
+	description = 'An Amazon SES transport for the Exim MTA.',
+	platforms = [ 'any' ],
 	author = "Jayson Vantuyl",
 	author_email = "jvantuyl@gmail.com",
-	description = "provides a 'pipe' transport for Exim to deliver mail via Amazon SES",
-	license = "LGPL",
+	long_description = """Amazon's cloud includes a service to send e-mail through their infrastructure.
+While this is useful, sometimes there's just no substitute for an MTA.  This
+transport allows you to selectively integrate Amazon's SES with one of the
+Internet's most powerful MTAs, Exim.
+""",
+	url = 'https://github.com/jvantuyl/exim_ses_transport',
+	license = "http://www.gnu.org/copyleft/lesser.html",
 	classifiers = [
 		'Topic :: Communications :: Email :: Filters',
 		'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)'
 	],
 
+	packages = find_packages(),
+	install_requires = ['boto'],
 	entry_points = { 'console_scripts': [ 'exim_ses_transport=exim_ses_transport.transport:run' ] }
 )
