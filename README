@@ -65,6 +65,11 @@ to be authorized, you should have this list.  If you have a more complex
 installation, you can still use this router at the top to send only SES senders
 via SES and others via your normal configuration.
 
+The example configuration puts the transport in debugging mode.  This drops a
+file in /tmp for each attempted delivery.  To disable this, remove the DEBUG
+variable from the environment by modifying the exim configuration
+appropriately.
+
 Adminstrivia
 ------------
 
