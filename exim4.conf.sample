@@ -1,11 +1,16 @@
+# don't open yourself up to the internets
 local_interfaces = <; [127.0.0.1]:25 ; [::1]:25
 
+# sender must be an ses sender, any recipients are good
 acl_not_smtp = acl_ses_users
 acl_smtp_mail = acl_ses_users
 acl_smtp_rcpt = acl_accept_any
 
 ignore_bounce_errors_after = 1d
 timeout_frozen_after = 7d
+
+# add your sending user here if the sender name needs to be forced
+trusted_users = root : some_local_user
 
 begin acl
 
@@ -25,6 +30,7 @@ ses:
 
 begin transports
 
+# make sure to specify your AWS creds below, and remove DEBUG=True unless you want all of the logs in /tmp
 ses:
 	driver = pipe
 	path = /bin:/usr/bin:/usr/local/bin:/opt/local/bin/
