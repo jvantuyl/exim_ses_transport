@@ -22,7 +22,7 @@ from setuptools import setup, find_packages
 
 setup(
 	name = "EximSesTransport",
-	version = "0.2",
+	version = "0.3",
 
 	description = 'An Amazon SES transport for the Exim MTA.',
 	platforms = [ 'any' ],
