@@ -22,7 +22,7 @@ Exim Transport for Amazon SES
 from boto.ses import SESConnection
 from boto.exception import BotoServerError
 from os import environ, getpid
-from sys import stdin, argv, stderr, exit
+from sys import stdin, argv, stderr, exit, exc_info
 from traceback import format_exc
 
 # Exit Codes
@@ -101,6 +101,8 @@ class SesSender(object):
 		self.log("FATAL ERROR: " + msg)
 		if exc:
 			self.log('Exception:\n' + format_exc())
+			etype, evalue, etb = exc_info()
+			print repr(evalue) # for logging
 		exit(code)
 
 	def init_log(self):
