@@ -37,6 +37,11 @@ ses:
 	environment = AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX:AWS_SECRET_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY:DEBUG=True
 	command = exim_ses_transport $sender_address $pipe_addresses
 	batch_max = 25
+	temp_errors = 1 : 2 : 3 : 4 : 6 : 73 : 75
+	# 1, 2, 3, and 6 are usually misconfiguration
+	# 4 is usually transient
+	# 5 and 7 are pretty much always fatal
+	# 73 and 75 are some default system specified exits (see sysexit.h), we don't use them for now
 
 begin authenticators
 
