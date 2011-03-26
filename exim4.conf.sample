@@ -53,7 +53,7 @@ ses:
 
 begin retry
 
-*                 *           F,2h,15m; G,16h,1h,1.5; F,5d,8h 
+*	*	F,2h,15m; G,16h,1h,1.5; F,5d,8h
 
 begin authenticators
 
