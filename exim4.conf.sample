@@ -42,6 +42,8 @@ ses:
 	# 4 is usually transient
 	# 5 and 7 are pretty much always fatal
 	# 73 and 75 are some default system specified exits (see sysexit.h), we don't use them for now
+	log_fail_output
+	log_defer_output
 
 begin authenticators
 
