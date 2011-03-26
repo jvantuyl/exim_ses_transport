@@ -46,6 +46,7 @@ class SesSender(object):
 			self.get_credentials()
 			self.make_connection()
 			self.process_message()
+			self.send_message()
 		except Exception:
 			self.abort('Unspecified error',1)
 
@@ -76,15 +77,18 @@ class SesSender(object):
 			msg = stdin.read()
 			assert msg[:4] == 'From'
 			envelope,msg = msg.split('\n',1)
+			self.msg = msg
 			self.log('Sender: %r' % self.sender)
 			self.log('Recipients: %r' % self.recipients)
 			self.log('Message:\n' + msg)
 		except Exception:
 			self.abort('Failed to process message text',5)
+
+	def send_message(self):
 		try:
 			self.conn.send_raw_email(
 				source=self.sender,
-				raw_message=msg,
+				raw_message=self.msg,
 				destinations=self.recipients
 			)
 		except BotoServerError, bse:
