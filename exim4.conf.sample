@@ -15,9 +15,15 @@ trusted_users = root : some_local_user
 begin acl
 
 acl_ses_users:
+	discard
+		senders = :
+		logwrite = :main,reject: absorbing bounce
 	accept
 		senders = lsearch;/etc/exim4/ses.senders
+		logwrite = :main: forwarding to SES
 	deny
+		message = "access denied"
+
 
 acl_accept_any:
 	accept
