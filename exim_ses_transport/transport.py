@@ -21,6 +21,7 @@ Exim Transport for Amazon SES
 
 from boto.ses import SESConnection
 from boto.exception import BotoServerError
+from dkim import DKIM
 from os import environ, getpid
 from sys import stdin, argv, stderr, exit, exc_info
 from traceback import format_exc
@@ -33,12 +34,17 @@ from traceback import format_exc
 # 5 Failed to process message text
 # 6 Bad AWS Credentials
 # 7 Error actually delivering message
+# 8 Missing DKIM credentials
+
+# All recommended headers except for Date, Message-ID which Amazon may alter.
+dkim_include_headers = ("From", "Sender", "Reply-To", "Subject", "To", "Cc", "MIME-Version", "Content-Type", "Content-Transfer-Encoding", "Content-ID", "Content-Description", "Resent-Date", "Resent-From", "Resent-Sender", "Resent-To", "Resent-Cc", "Resent-Message-ID", "In-Reply-To", "References", "List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive")
 
 class SesSender(object):
 	logger = None
 
 	def run(self):
 		self.init_log()
+		self.init_signer()
 		try:
 			self.log("Args: %r" % argv)
 			self.log("Env: %r" % dict(environ))
@@ -77,12 +83,21 @@ class SesSender(object):
 			msg = stdin.read()
 			assert msg[:4] == 'From'
 			envelope,msg = msg.split('\n',1)
-			self.msg = msg
+			self.msg = self.sign_message(msg)
 			self.log('Sender: %r' % self.sender)
 			self.log('Recipients: %r' % self.recipients)
 			self.log('Message:\n' + msg)
 		except Exception:
 			self.abort('Failed to process message text',5)
+
+	def sign_message(self, msg):
+		if self.dkim:
+			return DKIM(msg).sign(self.dkim_selector,
+				self.dkim_domain, self.dkim_private_key,
+				canonicalize=('relaxed', 'relaxed'),
+				include_headers=dkim_include_headers) + msg
+		else:
+			return msg
 
 	def send_message(self):
 		try:
@@ -113,10 +128,23 @@ class SesSender(object):
 		if 'DEBUG' in environ:
 			self.logger = file('/tmp/exim_ses_delivery_%s' % getpid(),'w')
 
+	def init_signer(self):
+		if environ.get('DKIM', '').lower() in ('1', 'true'):
+			try:
+				self.dkim_domain = environ['DKIM_DOMAIN']
+				self.dkim_selector = environ['DKIM_SELECTOR']
+				self.dkim_private_key = open(environ['DKIM_KEYFILE']).read()
+			except KeyError, e:
+				self.abort('DKIM setup failed: %s not specified' % e.args[0], 8)
+			except IOError:
+				self.abort('DKIM setup failed: keyfile not found', 8)
+			self.dkim = True
+		else:
+			self.dkim = False
+
 	def log(self,msg,exc=True):
 		if self.logger:
 			print >>self.logger, msg
 
 def run():
 	SesSender().run()
-
