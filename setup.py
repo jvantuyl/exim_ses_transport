@@ -18,11 +18,11 @@ setuptools installer for exim_ses_transport
 # You should have received a copy of the GNU Lesser General Public License
 # along with exim_ses_transport.  If not, see <http://www.gnu.org/licenses/>.
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
 	name = "EximSesTransport",
-	version = "0.3",
+	version = "0.4pre",
 
 	description = 'An Amazon SES transport for the Exim MTA.',
 	platforms = [ 'any' ],
@@ -40,7 +40,7 @@ Internet's most powerful MTAs, Exim.
 		'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)'
 	],
 
-	packages = find_packages(),
-	install_requires = ['boto'],
+	packages = ['exim_ses_transport'],
+	requires = ['boto>=2.0', 'pydkim>=0.4'],
 	entry_points = { 'console_scripts': [ 'exim_ses_transport=exim_ses_transport.transport:run' ] }
 )
