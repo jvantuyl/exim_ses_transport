@@ -94,7 +94,7 @@ class SesSender(object):
 		if self.dkim:
 			return DKIM(msg).sign(self.dkim_selector,
 				self.dkim_domain, self.dkim_private_key,
-				canonicalize=('relaxed', 'relaxed'),
+				canonicalize=('relaxed', 'simple'),
 				include_headers=dkim_include_headers) + msg
 		else:
 			return msg
