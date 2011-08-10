@@ -42,5 +42,6 @@ Internet's most powerful MTAs, Exim.
 
 	packages = ['exim_ses_transport'],
 	requires = ['boto>=2.0', 'pydkim>=0.4'],
+	dependency_links = ['https://launchpad.net/pydkim'],
 	entry_points = { 'console_scripts': [ 'exim_ses_transport=exim_ses_transport.transport:run' ] }
 )
