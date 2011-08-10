@@ -12,6 +12,13 @@ timeout_frozen_after = 7d
 # add your sending user here if the sender name needs to be forced
 trusted_users = root : some_local_user
 
+# add your mailname setting here (from /etc/mailname)
+ETC_MAILNAME=timetric.vm.bytemark.co.uk
+# and any other local domains here:
+MAIN_LOCAL_DOMAINS=@:localhost:empty
+
+domainlist local_domains = MAIN_LOCAL_DOMAINS
+
 begin acl
 
 acl_ses_users:
@@ -30,6 +37,13 @@ acl_accept_any:
 
 begin routers
 
+system_aliases:
+        driver = redirect
+        domains = +local_domains
+        allow_fail
+        allow_defer
+        data = ${lookup{$local_part}lsearch{/etc/aliases}}
+
 ses:
 	driver = accept
 	transport = ses
@@ -37,14 +51,15 @@ ses:
 begin transports
 
 # make sure to specify your AWS creds below, and remove DEBUG=True unless you want all of the logs in /tmp
+# If you're using DKIM, then specify all the DKIM variablaes; otherwise simply delete them.
 ses:
 	driver = pipe
 	path = /bin:/usr/bin:/usr/local/bin:/opt/local/bin/
-	environment = AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX:AWS_SECRET_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY:DEBUG=True
+	environment = AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX:AWS_SECRET_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY:DEBUG=True:DKIM=True:DKIM_DOMAIN=example.com:DKIM_SELECTOR=xxx:DKIM_KEY_FILE=/path/to/keyfile
 	command = exim_ses_transport $sender_address $pipe_addresses
 	batch_max = 25
-	temp_errors = 1 : 2 : 3 : 4 : 6 : 73 : 75
-	# 1, 2, 3, and 6 are usually misconfiguration
+	temp_errors = 1 : 2 : 3 : 4 : 6 : 8 : 73 : 75
+	# 1, 2, 3, 6, and 8 are usually misconfiguration
 	# 4 is usually transient
 	# 5 and 7 are pretty much always fatal
 	# 73 and 75 are some default system specified exits (see sysexit.h), we don't use them for now
@@ -55,5 +70,11 @@ begin retry
 
 *	*	F,2h,15m; G,16h,1h,1.5; F,5d,8h
 
-begin authenticators
+begin rewrite
 
+*@+local_domains "${lookup{${local_part}}lsearch{/etc/email-addresses}\
+                   {$value}fail}" Ffrs
+*@ETC_MAILNAME "${lookup{${local_part}}lsearch{/etc/email-addresses}\
+                   {$value}fail}" Ffrs
+
+begin authenticators
