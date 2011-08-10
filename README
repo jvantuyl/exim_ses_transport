@@ -7,6 +7,9 @@ What
 This transport allows you use Exim to deliver mail through Amazon's SES
 service.
 
+This fork adds support for DKIM-signing the messages. (see
+http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?DKIM.html)
+
 Why SES + Exim?
 ---------------
 
@@ -70,6 +73,8 @@ file in /tmp for each attempted delivery.  To disable this, remove the DEBUG
 variable from the environment by modifying the exim configuration
 appropriately.
 
+Note that the DKIM functionality requires the use of pydkim 4.0 or greater, which
+is not available on PyPI - see https://launchpad.net/pydkim
 Adminstrivia
 ------------
 
@@ -77,3 +82,4 @@ This software was written by Jayson Vantuyl <jvantuyl@gmail.com>, with generous
 support from AssetMap (http://www.assetmap.com).  It is licensed under the LGPL
 version 3.0.
 
+The DKIM functionality was added by Toby White <toby@eaddrinu.se>
