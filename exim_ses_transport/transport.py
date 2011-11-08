@@ -112,7 +112,7 @@ class SesSender(object):
 				self.abort('Bad AWS Credentials (token)',6)
 			if 'SignatureDoesNotMatch' in bse.body:
 				self.abort('Bad AWS Credentials (signature)',6)
-			if error_code == 'Throttling':
+			if bse.error_code == 'Throttling':
 				self.abort('Failed to actually deliver message: quota exceeded',9)
 			self.abort('Failed to actually deliver message:',7)
 		except Exception:
