@@ -22,6 +22,7 @@ Exim Transport for Amazon SES
 from boto.ses import SESConnection
 from boto.exception import BotoServerError
 from dkim import DKIM
+from email.parser import Parser
 from os import environ, getpid
 from sys import stdin, argv, stderr, exit, exc_info
 from traceback import format_exc
@@ -39,6 +40,10 @@ from traceback import format_exc
 
 # All recommended headers except for Date, Message-ID which Amazon may alter.
 dkim_include_headers = ("From", "Sender", "Reply-To", "Subject", "To", "Cc", "MIME-Version", "Content-Type", "Content-Transfer-Encoding", "Content-ID", "Content-Description", "Resent-Date", "Resent-From", "Resent-Sender", "Resent-To", "Resent-Cc", "Resent-Message-ID", "In-Reply-To", "References", "List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive")
+
+# All headers allowed by AWS (as of 2010-12-01)
+aws_allowed_headers = ("Accept-Language", "Bcc", "Cc", "Comments", "Content-Type", "Content-Transfer-Encoding", "Content-ID", "Content-Description", "Content-Disposition", "Content-Language", "Date", "DKIM-Signature", "DomainKey-Signature", "From", "In-Reply-To", "Keywords", "List-Archive", "List-Help", "List-Id", "List-Owner", "List-Post", "List-Subscribe", "List-Unsubscribe", "Message-Id", "MIME-Version", "Received", "References", "Reply-To", "Return-Path", "Sender", "Subject", "Thread-Index", "Thread-Topic", "To", "User-Agent",)
+
 
 class SesSender(object):
 	logger = None
@@ -83,6 +88,7 @@ class SesSender(object):
 		try:
 			msg = stdin.read()
 			assert msg[:4] == 'From'
+			msg = self.sanitize_headers(msg)
 			envelope,msg = msg.split('\n',1)
 			self.msg = self.sign_message(msg)
 			self.log('Sender: %r' % self.sender)
@@ -90,6 +96,13 @@ class SesSender(object):
 			self.log('Message:\n' + msg)
 		except Exception:
 			self.abort('Failed to process message text',5)
+
+	def sanitize_headers(self, msg):
+		msg_obj = Parser().parsestr(msg)
+		for hdr in msg_obj.keys():
+			if hdr not in aws_allowed_headers and not hdr.startswith('X-'):
+				del msg_obj[hdr]
+		return str(msg_obj)
 
 	def sign_message(self, msg):
 		if self.dkim:
