@@ -41,7 +41,7 @@ Internet's most powerful MTAs, Exim.
 	],
 
 	packages = ['exim_ses_transport'],
-	install_requires = ['boto>=2.0', 'pydkim>=0.4'],
-	dependency_links = ['https://launchpad.net/dkimpy/trunk/0.5/+download/pydkim-0.5.tar.gz#egg=pydkim-0.5'],
+	install_requires = ['boto>=2.0', 'dkimpy>=0.5'],
+	dependency_links = ['https://launchpad.net/dkimpy/trunk/0.5.4/+download/dkimpy-0.5.4.tar.gz#egg=dkimpy-0.5.4'],
 	entry_points = { 'console_scripts': [ 'exim_ses_transport=exim_ses_transport.transport:run' ] }
 )
