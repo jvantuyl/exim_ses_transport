@@ -243,7 +243,7 @@ class SesSender(object):
 		exit(code)
 
 	def init_log(self):
-		if environ.get('DEBUG').lower() in ('1', 'true'):
+		if environ.get('DEBUG', '').lower() in ('1', 'true'):
 			self.logger = file('/tmp/exim_ses_delivery_%s' % getpid(),'w')
 		self.log('logging initialized')
 
