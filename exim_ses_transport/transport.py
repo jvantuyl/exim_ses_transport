@@ -197,8 +197,8 @@ class SesSender(object):
 		msg_obj = Parser().parsestr(msg)
 		for hdr in msg_obj.keys():
 			if hdr not in aws_allowed_headers and not hdr.startswith('X-'):
-				del msg_obj[hdr]
 				self.log("sanitizing SES disallowed header: %s" % hdr)
+				msg_obj['X-EximSESTransport-Sanitized-' + hdr] = msg_obj.pop(hdr)
 		return str(msg_obj)
 
 	def sign_message(self, msg):
