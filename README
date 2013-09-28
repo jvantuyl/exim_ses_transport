@@ -75,6 +75,7 @@ appropriately.
 
 Note that the DKIM functionality requires the use of pydkim 4.0 or greater, which
 is not available on PyPI - see https://launchpad.net/pydkim
+
 Adminstrivia
 ------------
 
@@ -82,4 +83,4 @@ This software was written by Jayson Vantuyl <jvantuyl@gmail.com>, with generous
 support from AssetMap (http://www.assetmap.com).  It is licensed under the LGPL
 version 3.0.
 
-The DKIM functionality was added by Toby White <toby@eaddrinu.se>
+DKIM functionality was added by Toby White <toby@eaddrinu.se>.
