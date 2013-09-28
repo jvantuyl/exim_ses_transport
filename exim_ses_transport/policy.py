@@ -3,6 +3,7 @@ AWS / DKIM / SES Transport Policy Data
 """
 
 # Copyright 2013, Jayson Vantuyl <jvantuyl@gmail.com>
+# Copyright 2011, Toby White <tow@eaddrinu.se>
 #
 # This file is part of exim_ses_transport.
 #
