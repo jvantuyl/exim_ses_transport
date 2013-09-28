@@ -26,114 +26,7 @@ from email.parser import Parser
 from os import environ, getpid
 from sys import stdin, argv, stderr, exit, exc_info
 from traceback import format_exc
-
-# Exit Codes
-EXIT_CODES={
-	1: 'Unspecified fatal error',
-	2: 'Missing Sender / Recipients',
-	3: 'Missing AWS Credentials',
-	4: 'Failed to establish connection',
-	5: 'Failed to process message text',
-	6: 'Bad AWS Credentials',
-	7: 'Error actually delivering message',
-	8: 'Bad or missing DKIM credentials',
-	9: 'Over quota',
-}
-
-# All recommended headers except for Date, Message-ID which Amazon may alter.
-dkim_include_headers = (
-	"Cc",
-	"Content-Description",
-	"Content-ID",
-	"Content-Transfer-Encoding",
-	"Content-Type",
-	"From",
-	"In-Reply-To",
-	"List-Archive"
-	"List-Help",
-	"List-Id",
-	"List-Owner",
-	"List-Post",
-	"List-Subscribe",
-	"List-Unsubscribe",
-	"MIME-Version",
-	"References",
-	"Reply-To",
-	"Resent-Cc",
-	"Resent-Date",
-	"Resent-From",
-	"Resent-Message-ID",
-	"Resent-Sender",
-	"Resent-To",
-	"Sender",
-	"Subject",
-	"To",
-)
-
-# All headers allowed by AWS (as of 2013-09-28), see http://docs.aws.amazon.com/ses/latest/DeveloperGuide/header-fields.html
-aws_allowed_headers = (
-	"Accept-Language",
-	"acceptLanguage",
-	"Archived-At",
-	"Authentication-Results",
-	"Auto-Submitted",
-	"Bcc",
-	"Bounces-To",
-	"Cc",
-	"Comments",
-	"Content-Alternative",
-	"Content-Class",
-	"Content-Description",
-	"Content-Disposition",
-	"Content-Features",
-	"Content-ID",
-	"Content-Language",
-	"Content-Length",
-	"Content-Location",
-	"Content-MD5",
-	"Content-Transfer-Encoding",
-	"Content-Type",
-	"Date",
-	"DKIM-Signature",
-	"DomainKey-Signature",
-	"Errors-To",
-	"From",
-	"Importance",
-	"In-Reply-To",
-	"Keywords",
-	"List-Archive",
-	"List-Help",
-	"List-Id",
-	"List-Owner",
-	"List-Post",
-	"List-Subscribe",
-	"List-Unsubscribe",
-	"Message-Context",
-	"Message-ID",
-	"MIME-Version",
-	"Organization",
-	"Original-From",
-	"Original-Message-ID",
-	"Original-Recipient",
-	"Original-Subject",
-	"PICS-Label",
-	"Precedence",
-	"Priority",
-	"Received",
-	"Received-SPF",
-	"References",
-	"Reply-To",
-	"Return-Path",
-	"Return-Receipt-To",
-	"Sender",
-	"Sensitivity",
-	"Subject",
-	"Thread-Index",
-	"Thread-Topic",
-	"To",
-	"User-Agent",
-	"VBR-Info",
-)
+from policy import EXIT_CODES, DKIM_INCLUDE_HEADERS, AWS_ALLOWED_HEADERS
 
 
 class SesSender(object):
@@ -196,7 +89,7 @@ class SesSender(object):
 		self.log("parsing message")
 		msg_obj = Parser().parsestr(msg)
 		for hdr in msg_obj.keys():
-			if hdr not in aws_allowed_headers and not hdr.startswith('X-'):
+			if hdr not in AWS_ALLOWED_HEADERS and not hdr.startswith('X-'):
 				self.log("sanitizing SES disallowed header: %s" % hdr)
 				msg_obj['X-EximSESTransport-Sanitized-' + hdr] = msg_obj.pop(hdr)
 		return str(msg_obj)
@@ -207,7 +100,7 @@ class SesSender(object):
 			return DKIM(msg).sign(self.dkim_selector,
 				self.dkim_domain, self.dkim_private_key,
 				canonicalize=('relaxed', 'simple'),
-				include_headers=dkim_include_headers) + msg
+				include_headers=DKIM_INCLUDE_HEADERS) + msg
 		else:
 			return msg
 
@@ -265,6 +158,3 @@ class SesSender(object):
 	def log(self,msg,exc=True):
 		if self.logger:
 			print >>self.logger, msg
-
-def run():
-	SesSender().run()
