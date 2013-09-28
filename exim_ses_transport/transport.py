@@ -39,7 +39,34 @@ from traceback import format_exc
 # 9 Over quota
 
 # All recommended headers except for Date, Message-ID which Amazon may alter.
-dkim_include_headers = ("From", "Sender", "Reply-To", "Subject", "To", "Cc", "MIME-Version", "Content-Type", "Content-Transfer-Encoding", "Content-ID", "Content-Description", "Resent-Date", "Resent-From", "Resent-Sender", "Resent-To", "Resent-Cc", "Resent-Message-ID", "In-Reply-To", "References", "List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive")
+dkim_include_headers = (
+	"Cc",
+	"Content-Description",
+	"Content-ID",
+	"Content-Transfer-Encoding",
+	"Content-Type",
+	"From",
+	"In-Reply-To",
+	"List-Archive"
+	"List-Help",
+	"List-Id",
+	"List-Owner",
+	"List-Post",
+	"List-Subscribe",
+	"List-Unsubscribe",
+	"MIME-Version",
+	"References",
+	"Reply-To",
+	"Resent-Cc",
+	"Resent-Date",
+	"Resent-From",
+	"Resent-Message-ID",
+	"Resent-Sender",
+	"Resent-To",
+	"Sender",
+	"Subject",
+	"To",
+)
 
 # All headers allowed by AWS (as of 2013-09-28), see http://docs.aws.amazon.com/ses/latest/DeveloperGuide/header-fields.html
 aws_allowed_headers = (
