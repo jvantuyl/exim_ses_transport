@@ -58,7 +58,7 @@ ses:
 	environment = AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXXX:AWS_SECRET_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY:DEBUG=True:DKIM=True:DKIM_DOMAIN=example.com:DKIM_SELECTOR=xxx:DKIM_KEY_FILE=/path/to/keyfile
 	command = exim_ses_transport $sender_address $pipe_addresses
 	batch_max = 25
-	temp_errors = 1 : 2 : 3 : 4 : 6 : 8 : 73 : 75
+	temp_errors = 1 : 2 : 3 : 4 : 6 : 8 : 9 : 73 : 75
 	# 1, 2, 3, 6, and 8 are usually misconfiguration
 	# 4 is usually transient
 	# 5 and 7 are pretty much always fatal
